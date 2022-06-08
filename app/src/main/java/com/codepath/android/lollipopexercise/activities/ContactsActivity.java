@@ -3,14 +3,17 @@ package com.codepath.android.lollipopexercise.activities;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
 
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.core.content.ContextCompat;
 import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.codepath.android.lollipopexercise.R;
 import com.codepath.android.lollipopexercise.adapters.ContactsAdapter;
 import com.codepath.android.lollipopexercise.models.Contact;
+import com.google.android.material.snackbar.Snackbar;
 
 import java.util.List;
 
@@ -46,6 +49,29 @@ public class ContactsActivity extends AppCompatActivity {
 
         // Bind adapter to list
         rvContacts.setAdapter(mAdapter);
+
+
+    }
+
+    View.OnClickListener myOnClickListener = new View.OnClickListener() {
+        @Override
+        public void onClick(View v) {
+            contacts.remove(0);
+            mAdapter.notifyItemRemoved(0);
+        }
+    };
+
+    public void onComposeAction (MenuItem mi) {
+        // choose a random contact to add and add it to the beginning of the list
+        Contact toBeAdded = Contact.getRandomContact(this);
+        contacts.add(0, toBeAdded);
+        mAdapter.notifyItemInserted(0);
+        rvContacts.scrollToPosition(0);   // index 0 position
+
+        Snackbar.make(rvContacts, "Contact Added", Snackbar.LENGTH_LONG)
+                .setAction("UNDO", myOnClickListener)
+                .setActionTextColor(ContextCompat.getColor(ContactsActivity.this, R.color.accent))
+                .show();
     }
 
     @Override
@@ -54,6 +80,8 @@ public class ContactsActivity extends AppCompatActivity {
         getMenuInflater().inflate(R.menu.menu_contacts, menu);
         return true;
     }
+
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
